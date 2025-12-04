@@ -9,7 +9,7 @@ FORBIDDEN_FUNCTIONS = {
 
 # 2. Define what MUST be imported if you are in 'src/' or 'api/'
 # We check if the file imports your custom logger
-REQUIRED_MODULES = ["src.logger"]
+REQUIRED_MODULES = ["src.logger", "src.exception"]
 
 
 def check_file(filename):
