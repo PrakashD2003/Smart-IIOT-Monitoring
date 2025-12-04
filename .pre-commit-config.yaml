@@ -1,0 +1,45 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.9.1
+    hooks:
+      - id: black
+        language_version: python3.11 
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 6.1.0
+    hooks:
+      - id: flake8
+        additional_dependencies: [flake8-bugbear]
+        # Ignore some errors that conflict with Black
+        args: ["--max-line-length=88", "--extend-ignore=E203"]
+
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: ["-r", "src", "api"] # Only scan source code and api
+        exclude: "tests/"
+        additional_dependencies: ['pbr'] 
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.5.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-requests, types-PyYAML]
+        args: ["--ignore-missing-imports", "--disallow-untyped-defs"]
+        exclude: ^(notebooks/|tests/|scripts/)
+  
+  - repo: local
+    hooks:
+      - id: enforce-architecture
+        name: Enforce Architecture (No Print)
+        entry: python scripts/enforce_architecture.py
+        language: python
+        types: [python]
+        exclude: ^(notebooks/|tests/|scripts/)
