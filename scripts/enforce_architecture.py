@@ -24,12 +24,12 @@ def check_file(filename):
 
     # Scan the AST
     for node in ast.walk(tree):
-        # Check imports
+        # 1. Check imports
         if isinstance(node, ast.ImportFrom) and node.module:
             if any(req in node.module for req in REQUIRED_MODULES):
                 has_logger_import = True
 
-        # Check forbidden functions
+        # 2. Check forbidden functions
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             if node.func.id in FORBIDDEN_FUNCTIONS:
                 # build the message on multiple lines to satisfy line-length limits
@@ -39,6 +39,23 @@ def check_file(filename):
                 )
                 errors.append(msg)
 
+        # 3. Enforce DetailedException Usage in 'raise'
+        # If we see a 'raise' statement, check what is being raised.
+        if isinstance(node, ast.Raise):
+            if isinstance(node.exc, ast.Call) and isinstance(node.exc.func, ast.Name):
+                # If they raise generic 'Exception' or 'ValueError', warn them
+                if node.exc.func.id in [
+                    "Exception",
+                    "ValueError",
+                    "TypeError",
+                    "KeyError",
+                ]:
+                    msg = (
+                        f"{filename}:{node.lineno} ⚠️  Anti-Pattern: Raising generic "
+                        f"'{node.exc.func.id}'. "
+                        "Wrap it in 'DetailedException(e)' or use a custom exception."
+                    )
+                    errors.append(msg)
     # Logic: If it's a python file in src/ or api/, it SHOULD import the logger
     # (Skipping __init__.py files as they might just expose exports)
     if ("src/" in filename or "api/" in filename) and not filename.endswith(
