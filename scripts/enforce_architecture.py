@@ -52,8 +52,8 @@ def check_file(filename):
                 ]:
                     msg = (
                         f"{filename}:{node.lineno} ⚠️  Anti-Pattern: Raising generic "
-                        f"'{node.exc.func.id}'. Wrap it in 'DetailedException(e)' \n"
-                        f"or use a custom exception."
+                        f"'{node.exc.func.id}'. "
+                        "Wrap it in 'DetailedException(e)' or use a custom exception."
                     )
                     errors.append(msg)
     # Logic: If it's a python file in src/ or api/, it SHOULD import the logger
