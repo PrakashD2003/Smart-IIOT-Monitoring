@@ -43,3 +43,17 @@ repos:
         language: python
         types: [python]
         exclude: ^(notebooks/|tests/|scripts/)
+
+  - repo: https://github.com/econchick/interrogate
+    rev: 1.7.0
+    hooks:
+      - id: interrogate
+        args: [
+          "--quiet",
+          "--fail-under=100",      # Fails if coverage is < 100%
+          "--exclude", "scripts",  # Exclude scripts/
+          "--exclude", "notebooks", # Exclude notebooks/
+          "--exclude", "tests",    # (Recommended) Exclude tests/
+          "-i",                    # Ignore __init__.py files (optional, remove if you want them checked)
+        ]
+        pass_filenames: false      # Run on the whole codebase, not just changed files
