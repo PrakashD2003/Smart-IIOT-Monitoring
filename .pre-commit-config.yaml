@@ -6,7 +6,7 @@ exclude: |
   (^dashboard/.next/)|
   (^dashboard/.vite/)|
   (^dashboard/.cache/)
-  
+  a
 
 repos:
   - repo: https://github.com/psf/black
