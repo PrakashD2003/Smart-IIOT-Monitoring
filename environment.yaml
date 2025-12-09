@@ -1,6 +1,9 @@
 name: smart-iiot
 channels:
   - conda-forge
+# Note: This environment handles Python dependencies only.
+# For the React dashboard, Node.js (v18+) and npm are required separately.
+# Install Node.js from https://nodejs.org/ and run 'make setup-dashboard'
 dependencies:
   - python=3.11
   - numpy=1.26.4
