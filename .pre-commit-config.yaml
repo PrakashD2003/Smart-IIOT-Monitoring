@@ -1,3 +1,13 @@
+exclude: |
+  (^dashboard/node_modules/)|
+  (^node_modules/)|
+  (^dashboard/build/)|
+  (^dashboard/dist/)|
+  (^dashboard/.next/)|
+  (^dashboard/.vite/)|
+  (^dashboard/.cache/)
+  
+
 repos:
   - repo: https://github.com/psf/black
     rev: 23.9.1
