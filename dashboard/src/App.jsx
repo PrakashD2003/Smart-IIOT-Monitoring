@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, AlertTriangle, CheckCircle, TrendingUp, Gauge, Clock, Zap, Wrench, ThermometerSun, RotateCw } from 'lucide-react';
 
+// Probability floors ensure visualization matches machine status
+const STATUS_PROBABILITY_FLOORS = {
+  healthy: 0,
+  warning: 0.5,
+  critical: 0.75,
+};
+
 /**
  * Main Application Component
  * Manages the entire Smart IIoT Monitoring Dashboard with navigation between
@@ -78,7 +85,8 @@ const SmartIIoTDashboard = () => {
     
     // Calculate failure probability based on sensor values
     const probability = calculateFailureProbability(newDataPoint);
-    setFailureProbability(probability);
+    const statusFloor = STATUS_PROBABILITY_FLOORS[selectedMachine?.status] || 0;
+    setFailureProbability(Math.max(probability, statusFloor));
     
     // Keep last 20 data points for charts
     setSensorData(prev => [...prev.slice(-19), newDataPoint]);
@@ -122,7 +130,8 @@ const SmartIIoTDashboard = () => {
   const handleMachineClick = (machine) => {
     setSelectedMachine(machine);
     setSensorData([]);
-    setFailureProbability(0);
+    // Start the gauge aligned with the machine's status so UI stays consistent
+    setFailureProbability(STATUS_PROBABILITY_FLOORS[machine.status] || 0);
     setCurrentView('detail');
   };
 
@@ -483,13 +492,20 @@ const SmartIIoTDashboard = () => {
                   <td className="py-2 px-4 text-slate-300">{data.torque.toFixed(1)} Nm</td>
                   <td className="py-2 px-4 text-slate-300">{data.toolWear.toFixed(0)} min</td>
                   <td className="py-2 px-4">
+                    {(() => {
+                      const rawProb = calculateFailureProbability(data);
+                      const statusFloor = STATUS_PROBABILITY_FLOORS[selectedMachine?.status] || 0;
+                      const displayedProb = Math.max(rawProb, statusFloor);
+                      return (
                     <span className={`px-2 py-1 rounded text-xs font-medium ${
-                      calculateFailureProbability(data) > 0.7 ? 'bg-red-500/20 text-red-400' :
-                      calculateFailureProbability(data) > 0.4 ? 'bg-yellow-500/20 text-yellow-400' :
+                      displayedProb > 0.7 ? 'bg-red-500/20 text-red-400' :
+                      displayedProb > 0.4 ? 'bg-yellow-500/20 text-yellow-400' :
                       'bg-green-500/20 text-green-400'
                     }`}>
-                      {(calculateFailureProbability(data) * 100).toFixed(0)}%
+                      {(displayedProb * 100).toFixed(0)}%
                     </span>
+                      );
+                    })()}
                   </td>
                 </tr>
               ))}
