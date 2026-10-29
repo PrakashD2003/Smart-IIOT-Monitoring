@@ -33,7 +33,7 @@ repos:
     rev: 1.7.5
     hooks:
       - id: bandit
-        args: ["-r", "src", "api"] # Only scan source code and api
+        args: ["-r", "common", "services", "simulator", "api"]
         exclude: "tests/"
         additional_dependencies: ['pbr'] 
 
@@ -48,9 +48,9 @@ repos:
   - repo: local
     hooks:
       - id: enforce-architecture
-        name: Enforce Architecture (No Print)
-        entry: python scripts/enforce_architecture.py
-        language: python
+        name: Enforce lightweight serving imports
+        entry: conda run -n smart-iiot python -m scripts.verification.enforce_architecture
+        language: system
         types: [python]
         exclude: ^(notebooks/|tests/|scripts/)
 
